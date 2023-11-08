@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
 
@@ -34,6 +36,47 @@ class _NewExpenseState extends State<NewExpense> {
     });
   }
 
+  void _showDialog() {
+    const Widget title = Text('Invalid Input');
+    const Widget text =
+        Text('Please ensure a valid title, amount and date are provided');
+    const Widget ok = Text('Ok');
+
+    if (Platform.isIOS) {
+      showCupertinoDialog(
+        context: context,
+        builder: (ctx) => CupertinoAlertDialog(
+          title: title,
+          content: text,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: ok,
+            ),
+          ],
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: title,
+          content: text,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: ok,
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   void _submitExpenseData() {
     final enteredAmount = double.tryParse(_amountController.text);
     final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
@@ -41,22 +84,7 @@ class _NewExpenseState extends State<NewExpense> {
     if (_titleController.text.trim().isEmpty ||
         amountIsInvalid ||
         _selectedDate == null) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Invalid Input'),
-          content: const Text(
-              'Please ensure a valid title, amount and date are provided'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-              },
-              child: const Text('Ok'),
-            ),
-          ],
-        ),
-      );
+      _showDialog();
       return;
     }
 
